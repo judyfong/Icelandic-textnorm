@@ -48,9 +48,15 @@ export cardinal_mask = cardinal_m;
 cardinal_decades = (decades util.Delete["0".utf8]) |
   decades util.Insert[" og ".utf8] cardinal_simple;
 
+export teensplus_round_numbers_20_to_90 = teensplus | (decades util.Delete["0".utf8]);
+
+export non_round_numbers_21_to_99 = decades util.Insert[" og ".utf8] ((units_notNeutral <-3>) | (neutral_units <-4.0>));
+
+export non_round_numbers_21_to_99_neutr = decades util.Insert[" og ".utf8] neutral_units;
+
 export numbers_20_to_99 = (decades util.Delete["0".utf8]) |
   decades util.Insert[" og ".utf8] ((units_notNeutral <-3>) | (neutral_units <-4.0>));
-  
+
 export numbers_20_to_99_neutr = (decades util.Delete["0".utf8]) |
   (decades util.Insert[" og ".utf8] neutral_units);
 
@@ -64,26 +70,28 @@ cardinal_hundreds_all = Optimize[
   hundreds_all util.Delete["0".utf8] util.Delete["0".utf8] |
   (hundreds_all util.Delete["0".utf8] util.Insert[" og ".utf8] cardinal_simple_all) |
   (hundreds_all util.Insert[" og ".utf8] teens) |
-  (hundreds_all (insspace|insand) cardinal_decades)]
+  (hundreds_all util.Insert[" og ".utf8] decades util.Delete["0".utf8]) |
+  (hundreds_all insspace decades util.Insert[" og ".utf9] cardinal_simple)]
 ;
 
 cardinal_hundreds_plain = Optimize[
   hundreds_plain util.Delete["0".utf8] util.Delete["0".utf8] |
   (hundreds_plain util.Delete["0".utf8] util.Insert[" og ".utf8] cardinal_simple_all) |
   (hundreds_plain util.Insert[" og ".utf8] teens) |
-  (hundreds_plain (insspace|insand) cardinal_decades)]
+  (hundreds_plain util.Insert[" og ".utf8] decades util.Delete["0".utf8]) |
+  (hundreds_plain insspace decades util.Insert[" og ".utf9] cardinal_simple)]
 ;
 
 #1900, 1905, 1914
 year_hundreds = Optimize[teens insspace ("".utf8 : "hundruð".utf8)
-  ((delzero delzero) | (delzero insand neutral_units) | (insand teensplus) | ((insspace|insand) numbers_20_to_99_neutr))];
+  ((delzero delzero) | (delzero insand neutral_units) | (insand teensplus_round_numbers_20_to_90) | (insspace non_round_numbers_21_to_99_neutr))];
 
 #2000, 2005, 2019
 year_mill = Optimize[neutral_units2to9 util.Insert[" ".utf8] ("".utf8 : "þúsund".utf8)
   ((delzero delzero delzero) |
   (delzero delzero insand neutral_units) |
-  (util.Delete["0".utf8] util.Insert[" og ".utf8] teensplus) |
-  (delzero (insspace|insand) numbers_20_to_99_neutr))]
+  (util.Delete["0".utf8] util.Insert[" og ".utf8] teensplus_round_numbers_20_to_90) |
+  (delzero insspace non_round_numbers_21_to_99_neutr))]
 ;
 
 # TODO: we still need a classifier for year
@@ -102,22 +110,22 @@ tail_1000_to_1099 = Optimize[
   ("".utf8 : "þúsund".utf8)
   (delzero delzero delzero |
   (delzero delzero insand units) |
-  (delzero insand teensplus) |
-  (delzero (insspace | insand) numbers_20_to_99))]
+  (delzero insand teensplus_round_numbers_20_to_90) |
+  (delzero insspace non_round_numbers_21_to_99))]
 ;
 
 numbers_1000_to_1099 = Optimize[
    one_neutr insspace tail_1000_to_1099];
    
 numbers_1100_to_1999 = Optimize[teens insspace ("".utf8 : "hundruð".utf8)
-  ((delzero delzero) | (delzero insand units) | (insand teensplus) | ((insspace|insand) numbers_20_to_99))];
+  ((delzero delzero) | (delzero insand units) | (insand teensplus_round_numbers_20_to_90) | (insspace non_round_numbers_21_to_99))];
 
 tail_2000_to_9999 = Optimize[
   ("".utf8 : "þúsund".utf8)
   (delzero delzero delzero |
   (delzero delzero insand units) |
-  (delzero insand teensplus) |
-  (delzero (insspace | insand) numbers_20_to_99) |
+  (delzero insand teensplus_round_numbers_20_to_90) |
+  (delzero insspace non_round_numbers_21_to_99) |
   ((insspace|insand) cardinal_hundreds_all))]
 ;
 
@@ -143,7 +151,8 @@ tail_1M_to_9M = Optimize[
   "milljónir".utf8 | "milljónum".utf8 | "milljóna".utf8 ))
   (delzero delzero delzero delzero delzero delzero |
   (delzero delzero delzero delzero delzero insand units <-4>) |
-  (delzero delzero delzero delzero (insspace | insand) (teens | numbers_20_to_99) <-6>) |
+  (delzero delzero delzero delzero insand teensplus_round_numbers_20_to_90 <-6>) |
+  (delzero delzero delzero delzero insspace non_round_numbers_21_to_99 <-6>) |
   (delzero delzero delzero (insspace | insand) cardinal_hundreds_plain <-8>) |
   (delzero delzero (insspace | insand) (numbers_1000_to_1099 | numbers_1100_to_1999 | numbers_2000_to_9999)) |
   (delzero (insspace | insand) numbers_10000_to_99999 <-60>) |
@@ -151,7 +160,7 @@ tail_1M_to_9M = Optimize[
 ;
 
 numbers_1M_to_9M = Optimize[
-  units
+  units_notNeutral
   insspace
   tail_1M_to_9M]
 ;

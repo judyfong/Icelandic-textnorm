@@ -40,8 +40,8 @@ hundreds2 = ((((("eitt".utf8 <2.0>) insspace) | delone)
 ordinals_100_to_999 = Optimize[
   hundreds1 delzero delzero |
   (hundreds1 delzero insand units <-1>) |
-  (hundreds1 insand teens <-2>) |
-  (hundreds2 (insspace | insand) ordinals_20_to_99 <-10>)]
+  (hundreds1 insand (teens | (decades util.Delete["0.".utf8]) ) <-2>) |
+  (hundreds2 insspace (decades util.Insert[" og "] untils) <-10>)]
 ;
 
 export ORDINAL = Optimize[
